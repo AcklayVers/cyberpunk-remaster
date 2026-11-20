@@ -1,0 +1,218 @@
+/* Shop layout inherits the shared city tone; scope it to the services window. */
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-workspace {
+  min-width: 0;
+  container-type: inline-size;
+  display: grid;
+  gap: 14px;
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-card {
+  min-width: 0;
+  overflow: hidden;
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-cover {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border: 1px solid var(--city-tone-border);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-buyer {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 14px 0 8px;
+  padding: 12px;
+  border: 1px solid var(--city-tone-border);
+  border-radius: 4px;
+  background: var(--city-tone-bg);
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-buyer
+  label {
+  flex: 1 1 220px;
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-balance {
+  margin: 0 0 6px;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-catalog-note,
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-offer
+  small,
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-image-editor
+  > small {
+  color: var(--city-tone-muted);
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-stock {
+  display: grid;
+  gap: 8px;
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-offer {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) minmax(130px, 160px);
+  align-items: start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--city-tone-border);
+  border-radius: 4px;
+  background: var(--city-tone-bg);
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-item-image {
+  display: block;
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border: 1px solid var(--city-tone-border);
+  border-radius: 4px;
+  background: var(--city-tone-raised);
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-offer-main,
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-checkout,
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-image-editor {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-item-link {
+  justify-content: start;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  height: auto;
+  min-height: 32px;
+  line-height: 1.35;
+  padding: 6px 8px;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-checkout
+  input {
+  width: 100%;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-offer
+  .city-service-actions {
+  margin-top: 4px;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-price {
+  color: var(--city-tone-accent-text);
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-editor,
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-receipts {
+  padding: 12px;
+  border: 1px solid var(--city-tone-border);
+  border-radius: 4px;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-editor
+  > summary,
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-receipts
+  > summary {
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-editor
+  > label,
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-image-editor {
+  margin-bottom: 10px;
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-drop {
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px dashed var(--city-tone-accent);
+  border-radius: 4px;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-image-preview {
+  width: min(100%, 280px);
+  height: 130px;
+  object-fit: contain;
+  border: 1px solid var(--city-tone-border);
+  border-radius: 4px;
+  background: var(--city-tone-bg);
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-upload {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-upload
+  input {
+  max-width: 100%;
+  height: auto;
+}
+@container (max-width: 520px) {
+  :is(#cyberpunk-city-services, .city-services-application) .city-shop-offer {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+  :is(#cyberpunk-city-services, .city-services-application)
+    .city-shop-checkout {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(80px, 1fr) minmax(100px, 1fr);
+    align-items: end;
+  }
+  :is(#cyberpunk-city-services, .city-services-application)
+    .city-shop-checkout
+    small {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-compendium-results {
+  max-height: 380px;
+  overflow: auto;
+  margin: 10px 0;
+  scrollbar-gutter: stable;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-compendium-item {
+  display: grid;
+  grid-template-columns: 20px 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 7px;
+  border-bottom: 1px solid var(--city-tone-border);
+  cursor: pointer;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-compendium-item
+  img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  .city-shop-compendium-item
+  span {
+  display: grid;
+  gap: 4px;
+  overflow-wrap: anywhere;
+}
+:is(#cyberpunk-city-services, .city-services-application) .city-shop-pool-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 5px 0;
+  overflow-wrap: anywhere;
+}
+:is(#cyberpunk-city-services, .city-services-application)
+  [data-service-compendium-pack] {
+  width: 100%;
+  min-width: 0;
+}

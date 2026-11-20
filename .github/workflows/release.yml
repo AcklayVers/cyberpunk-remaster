@@ -1,0 +1,66 @@
+name: Validate and publish Foundry module
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: foundry-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Test release packaging
+        run: python3 -m unittest discover -s tools -p test_release.py
+      - name: Set up Node for Remaster tests
+        if: hashFiles('package-lock.json') != ''
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install test dependencies
+        if: hashFiles('package-lock.json') != ''
+        run: npm ci --no-audit --no-fund
+      - name: Run module tests
+        if: hashFiles('package-lock.json') != ''
+        run: npm test
+      - name: Build and verify the Foundry ZIP
+        id: build
+        run: python3 tools/release.py --output dist
+      - name: Publish versioned release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ steps.build.outputs.tag }}
+          MODULE_ID: ${{ steps.build.outputs.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft > /tmp/release-draft; then
+            if [ "$(cat /tmp/release-draft)" = "false" ]; then
+              echo "Version $RELEASE_TAG is already published. Increase module.json version for a new release."
+              exit 0
+            fi
+          else
+            gh release create "$RELEASE_TAG" --target "$GITHUB_SHA" --draft --title "$MODULE_ID $RELEASE_TAG" --generate-notes
+          fi
+          remote_tag="$(git ls-remote --tags origin "refs/tags/$RELEASE_TAG")"
+          if [ -n "$remote_tag" ]; then
+            git fetch --no-tags origin "refs/tags/$RELEASE_TAG"
+            if [ "$(git rev-parse 'FETCH_HEAD^{commit}')" != "$GITHUB_SHA" ]; then
+              echo "The existing tag belongs to another commit. Use a new version; tags are never overwritten."
+              exit 1
+            fi
+          fi
+          gh release edit "$RELEASE_TAG" --target "$GITHUB_SHA"
+          gh release upload "$RELEASE_TAG" dist/module.json "dist/$MODULE_ID.zip" dist/SHA256SUMS --clobber
+          gh release edit "$RELEASE_TAG" --draft=false --latest

@@ -1,0 +1,401 @@
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { loadClassicLevel } from "./lib/classic-level.mjs";
+import {
+  allStrings,
+  plainText,
+  transformFolders,
+  transformItems,
+  transformJournals,
+  transformMacros,
+  validateTransformedContent,
+} from "./lib/content.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const packsRoot = path.join(root, "packs");
+const ClassicLevel = loadClassicLevel();
+
+const packSpecs = [
+  {
+    name: "cyberpunk-items",
+    label: "SF2E Cyberpunk Items",
+    type: "Item",
+  },
+  {
+    name: "cyberpunk-journals",
+    label: "SF2E Cyberpunk Journals",
+    type: "JournalEntry",
+  },
+  {
+    name: "cyberpunk-macros",
+    label: "SF2E Cyberpunk Macros",
+    type: "Macro",
+  },
+  { name: "city-npcs", label: "Найт-Сити · 24 NPC (SF2E)", type: "Actor" },
+];
+
+function canonicalValue(value) {
+  if (Array.isArray(value)) return value.map(canonicalValue);
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(
+    Object.entries(value)
+      .sort(([left], [right]) => left.localeCompare(right, "en"))
+      .map(([key, entry]) => [key, canonicalValue(entry)]),
+  );
+}
+
+function canonicalDocuments(documents) {
+  return [...documents]
+    .sort((left, right) =>
+      String(left._id).localeCompare(String(right._id), "en"),
+    )
+    .map(canonicalValue);
+}
+
+async function assertPackDirectory(spec) {
+  const directory = path.join(packsRoot, spec.name);
+  const stat = await fs.stat(directory);
+  if (!stat.isDirectory()) {
+    throw new Error(`${spec.name} is not a LevelDB directory.`);
+  }
+
+  const current = (
+    await fs.readFile(path.join(directory, "CURRENT"), "utf8")
+  ).trim();
+  if (!/^MANIFEST-\d+$/.test(current)) {
+    throw new Error(`${spec.name} has an invalid CURRENT pointer: ${current}`);
+  }
+  await fs.access(path.join(directory, current));
+
+  const files = await fs.readdir(directory);
+  if (!files.some((file) => /\.(?:ldb|log)$/.test(file))) {
+    throw new Error(`${spec.name} contains no LevelDB data files.`);
+  }
+  return directory;
+}
+
+async function copyPacksForValidation() {
+  const temporaryRoot = await fs.mkdtemp(
+    path.join(os.tmpdir(), "cyberpunk-remaster-validate-"),
+  );
+  try {
+    for (const spec of packSpecs) {
+      const source = await assertPackDirectory(spec);
+      await fs.cp(source, path.join(temporaryRoot, spec.name), {
+        recursive: true,
+      });
+    }
+    return temporaryRoot;
+  } catch (error) {
+    await fs.rm(temporaryRoot, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+async function readLevels(packRoot, packName, sublevelNames) {
+  const database = new ClassicLevel(path.join(packRoot, packName), {
+    createIfMissing: false,
+    valueEncoding: "json",
+  });
+  try {
+    const result = {};
+    for (const sublevelName of sublevelNames) {
+      const level = database.sublevel(sublevelName, {
+        valueEncoding: "json",
+      });
+      const entries = [];
+      for await (const [key, value] of level.iterator()) {
+        entries.push({ key, value });
+      }
+      result[sublevelName] = entries;
+    }
+    return result;
+  } finally {
+    await database.close();
+  }
+}
+
+const temporaryPacksRoot = await copyPacksForValidation();
+try {
+  const [itemPack, journalPack, macroPack] = await Promise.all([
+    readLevels(temporaryPacksRoot, "cyberpunk-items", ["items", "folders"]),
+    readLevels(temporaryPacksRoot, "cyberpunk-journals", [
+      "journal",
+      "journal.pages",
+    ]),
+    readLevels(temporaryPacksRoot, "cyberpunk-macros", ["macros"]),
+  ]);
+
+  const items = itemPack.items.map(({ value }) => value);
+  const folders = itemPack.folders.map(({ value }) => value);
+  const journalRoots = journalPack.journal.map(({ value }) => value);
+  const pageEntries = journalPack["journal.pages"];
+  const pages = pageEntries.map(({ value }) => value);
+  const macros = macroPack.macros.map(({ value }) => value);
+
+  for (const entries of [
+    itemPack.items,
+    itemPack.folders,
+    journalPack.journal,
+    macroPack.macros,
+  ]) {
+    for (const { key, value } of entries) {
+      if (key !== value._id) {
+        throw new Error(
+          `LevelDB key ${key} does not match Document ID ${value._id}.`,
+        );
+      }
+    }
+  }
+
+  const [
+    sourceItems,
+    sourceFolders,
+    sourceJournals,
+    sourceMacros,
+    sourcePktModels,
+    pktComponents,
+  ] = await Promise.all(
+    [
+      "content/exports/items.json",
+      "data/item-folders.json",
+      "content/exports/journals.json",
+      "content/exports/macros.json",
+      "data/pkt-models.json",
+      "data/pkt-components.json",
+    ].map(async (relative) =>
+      JSON.parse(await fs.readFile(path.join(root, relative), "utf8")),
+    ),
+  );
+  const expected = {
+    items: sourceItems.length,
+    folders: sourceFolders.length,
+    journals: sourceJournals.length,
+    pages: sourceJournals.reduce(
+      (total, journal) => total + (journal.pages?.length ?? 0),
+      0,
+    ),
+    macros: sourceMacros.length,
+  };
+  const actual = {
+    items: items.length,
+    folders: folders.length,
+    journals: journalRoots.length,
+    pages: pages.length,
+    macros: macros.length,
+  };
+  for (const [key, count] of Object.entries(expected)) {
+    if (actual[key] !== count) {
+      throw new Error(`Expected ${count} ${key}, found ${actual[key]}.`);
+    }
+  }
+
+  const pageByKey = new Map(pageEntries.map(({ key, value }) => [key, value]));
+  const referencedPageKeys = new Set();
+  const journals = journalRoots.map((journal) => ({
+    ...journal,
+    pages: journal.pages.map((pageId) => {
+      const key = `${journal._id}.${pageId}`;
+      const page = pageByKey.get(key);
+      if (!page) {
+        throw new Error(`Journal ${journal._id} is missing page ${pageId}.`);
+      }
+      referencedPageKeys.add(key);
+      return page;
+    }),
+  }));
+  const orphanedPageKeys = [...pageByKey.keys()].filter(
+    (key) => !referencedPageKeys.has(key),
+  );
+  if (orphanedPageKeys.length) {
+    throw new Error(
+      `Orphaned JournalEntryPage records: ${orphanedPageKeys.join(", ")}`,
+    );
+  }
+
+  const expectedDocuments = {
+    items: transformItems(sourceItems, sourcePktModels, pktComponents, {}),
+    folders: transformFolders(sourceFolders, {}),
+    journals: transformJournals(sourceJournals, sourcePktModels, {}),
+    macros: transformMacros(sourceMacros, {}),
+  };
+  const packedDocuments = { items, folders, journals, macros };
+  for (const key of Object.keys(expectedDocuments)) {
+    const expectedJson = JSON.stringify(
+      canonicalDocuments(expectedDocuments[key]),
+    );
+    const packedJson = JSON.stringify(canonicalDocuments(packedDocuments[key]));
+    if (expectedJson !== packedJson) {
+      throw new Error(
+        `Pack ${key} differs from its canonical source export. Rebuild packs.`,
+      );
+    }
+  }
+
+  const pktModels = pages
+    .map((page) => page.flags?.["cyberpunk-remaster"]?.pktModel)
+    .filter(Boolean);
+  validateTransformedContent({
+    items,
+    folders,
+    journals,
+    macros,
+    pktComponents,
+    pktModels,
+  });
+
+  const manifest = JSON.parse(
+    await fs.readFile(path.join(root, "module.json"), "utf8"),
+  );
+  const packageJson = JSON.parse(
+    await fs.readFile(path.join(root, "package.json"), "utf8"),
+  );
+  if (manifest.version !== packageJson.version) {
+    throw new Error(
+      `Version mismatch: module ${manifest.version}, package ${packageJson.version}.`,
+    );
+  }
+  if (manifest.title !== "SF2E Cyberpunk Remaster") {
+    throw new Error("Incorrect module title.");
+  }
+  if (manifest.authors?.[0]?.name !== "Ogorodnik") {
+    throw new Error("Incorrect module author.");
+  }
+
+  const cityPack = await readLevels(temporaryPacksRoot, "city-npcs", [
+    "actors",
+    "actors.items",
+  ]);
+  const cityItems = new Map(
+    cityPack["actors.items"].map((e) => [e.key, e.value]),
+  );
+  const cityActors = cityPack.actors.map(({ key, value: a }) => {
+    if (key !== a._id || a.type !== "npc")
+      throw new Error("Invalid city Actor root");
+    if (new Set(a.items).size !== a.items.length)
+      throw new Error("Duplicate embedded city Item ID");
+    return {
+      ...a,
+      items: a.items.map((id) => {
+        const i = cityItems.get(`${a._id}.${id}`);
+        if (!i || i._id !== id || !/^[A-Za-z0-9]{16}$/.test(id))
+          throw new Error("Invalid city embedded Item reference");
+        return i;
+      }),
+    };
+  });
+  const citySources = JSON.parse(
+    await fs.readFile(path.join(root, "data/city-npc-actors.json"), "utf8"),
+  );
+  if (
+    cityActors.length !== 24 ||
+    JSON.stringify(canonicalDocuments(cityActors)) !==
+      JSON.stringify(canonicalDocuments(citySources))
+  )
+    throw new Error("City NPC pack differs from24native sources");
+  if (cityItems.size !== cityActors.reduce((n, a) => n + a.items.length, 0))
+    throw new Error("Orphaned city NPC Items");
+
+  const expectedPackNames = packSpecs.map((pack) => pack.name);
+  const declaredPacks = manifest.packs ?? [];
+  if (
+    JSON.stringify(declaredPacks.map((pack) => pack.name)) !==
+    JSON.stringify(expectedPackNames)
+  ) {
+    throw new Error("Manifest pack declarations are incorrect.");
+  }
+  for (const spec of packSpecs) {
+    const pack = declaredPacks.find(
+      (candidate) => candidate.name === spec.name,
+    );
+    if (
+      pack?.label !== spec.label ||
+      pack?.type !== spec.type ||
+      pack?.path !== `packs/${spec.name}` ||
+      pack?.system !== "sf2e"
+    ) {
+      throw new Error(`Manifest declaration for ${spec.name} is incorrect.`);
+    }
+  }
+  const packFolder = manifest.packFolders?.[0];
+  if (
+    packFolder?.name !== "SF2E Cyberpunk" ||
+    JSON.stringify(packFolder.packs) !== JSON.stringify(expectedPackNames)
+  ) {
+    throw new Error(
+      "Manifest pack folder does not contain all declared packs.",
+    );
+  }
+
+  const canonicalExports = await Promise.all(
+    [
+      "content/exports/items.json",
+      "content/exports/journals.json",
+      "content/exports/macros.json",
+      "data/item-folders.json",
+    ].map(async (file) =>
+      JSON.parse(await fs.readFile(path.join(root, file), "utf8")),
+    ),
+  );
+  for (const string of allStrings(canonicalExports)) {
+    if (
+      /Compendium\.world\.sf2e-cyberpunk-|Compendium\.pf2e\.|@UUID\[(?:Item|JournalEntry)\./.test(
+        string,
+      )
+    ) {
+      throw new Error(
+        `Canonical export contains a legacy reference: ${string}`,
+      );
+    }
+  }
+
+  if (pktModels.length !== sourcePktModels.length) {
+    throw new Error(
+      `Expected ${sourcePktModels.length} structured PKT models, ` +
+        `found ${pktModels.length}.`,
+    );
+  }
+
+  const modelJournal = journals.find(
+    (journal) => journal._id === "LRV1KlxZGvXDm9ny",
+  );
+  const overviewPage = modelJournal?.pages.find(
+    (page) => page._id === "ylsMSP9weB5au75z",
+  );
+  if (!plainText(overviewPage?.text?.content)) {
+    throw new Error("The PKT model overview page is empty.");
+  }
+  for (const model of sourcePktModels) {
+    if (
+      model.journalId === modelJournal?._id &&
+      !overviewPage.text.content.includes(model.pageId)
+    ) {
+      throw new Error(
+        `The PKT overview does not link model page ${model.pageId}.`,
+      );
+    }
+  }
+  const hammerPage = modelJournal?.pages.find(
+    (page) => page._id === "HnzffVt4NYaOy28t",
+  );
+  if (/Тут описание!/i.test(plainText(hammerPage?.text?.content))) {
+    throw new Error("The PKT Hammer page still contains placeholder text.");
+  }
+
+  const traceMacro = macros.find((macro) => macro.name === "Счётчик следа");
+  if (
+    !traceMacro?.command.includes("flags.cyberpunk-remaster.netrunnerTrace")
+  ) {
+    throw new Error("The trace macro still uses a world-scoped flag.");
+  }
+
+  console.log(
+    `Validated ${items.length} Items, ${folders.length} folders, ` +
+      `${journals.length} journals / ${pages.length} pages, ` +
+      `${macros.length} macros and ${pktComponents.length} PKT components; 24 city NPCs / ${cityItems.size} embedded Items.`,
+  );
+} finally {
+  await fs.rm(temporaryPacksRoot, { recursive: true, force: true });
+}

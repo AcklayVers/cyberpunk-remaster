@@ -1,0 +1,263 @@
+/* Shared default city chrome, matching the Agent's Source / Night City Cyan.
+ * Keep this last in module.json: Foundry and Archive also style native controls.
+ * Tokens belong to the local map shell, never the surrounding Archive theme.
+ * COMM-LINK owns its twelve selectable profile palettes and semantic signals.
+ */
+:is(.night-city-application, #cyberpunk-night-city,
+    .city-services-application, #cyberpunk-city-services,
+    .city-agent-application, #cyberpunk-city-agent,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell) {
+  --city-tone-bg: #0d1519;
+  --city-tone-panel: #132025;
+  --city-tone-raised: #1b2d32;
+  --city-tone-border: #344c52;
+  --city-tone-text: #e8eef0;
+  --city-tone-muted: #a1b4b7;
+  --city-tone-accent: #6fb0b1;
+  --city-tone-accent-text: #87d8d1;
+  --city-tone-font: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --pcm-accent: var(--city-tone-accent);
+  --pcm-text: var(--city-tone-text);
+  --agent-bg: var(--city-tone-bg);
+  --agent-panel: var(--city-tone-panel);
+  --agent-border: var(--city-tone-border);
+  --agent-accent: var(--city-tone-accent);
+  --input-background-color: var(--city-tone-bg);
+  --input-text-color: var(--city-tone-text);
+  --input-border-color: var(--city-tone-border);
+  --input-focus-outline-color: var(--city-tone-accent);
+  --button-background-color: var(--city-tone-raised);
+  --button-text-color: var(--city-tone-text);
+  --button-border-color: var(--city-tone-border);
+  --button-hover-background-color: #254147;
+  --button-hover-text-color: var(--city-tone-text);
+  --button-hover-border-color: var(--city-tone-accent);
+  --range-track-color: var(--city-tone-border);
+  --range-thumb-color: var(--city-tone-accent);
+  color-scheme: dark;
+  color: var(--city-tone-text);
+  font-family: var(--city-tone-font);
+  background: var(--city-tone-bg);
+  border-color: var(--city-tone-border);
+}
+
+/* Native title bars remain Foundry controls, including Font Awesome glyphs. */
+:is(#cyberpunk-night-city, #cyberpunk-city-services, #cyberpunk-city-agent,
+    .night-city-application, .city-services-application, .city-agent-application)
+  > :is(.window-header, .window-content) {
+  color: var(--city-tone-text);
+  background: var(--city-tone-bg);
+  border-color: var(--city-tone-border);
+}
+
+:is(#cyberpunk-night-city, #cyberpunk-city-services, #cyberpunk-city-agent,
+    .night-city-application, .city-services-application, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(.night-city-app, .city-service-panel, .city-agent-phone) {
+  --agent-bg: var(--city-tone-bg);
+  --agent-panel: var(--city-tone-panel);
+  --agent-border: var(--city-tone-border);
+  --agent-accent: var(--city-tone-accent);
+  color: var(--city-tone-text);
+  background: var(--city-tone-bg);
+  font-family: var(--city-tone-font);
+}
+
+/* Explicit opaque surfaces remove the blue / red inherited chrome without
+ * repainting tiles, photographs, map pins, regions, or category swatches. */
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(.night-city-top, .night-city-tools, .world-city-map-sidebar,
+      .world-city-map-main, .world-city-map-toolbar, .world-city-map-detail,
+      .world-city-map-editor, .world-city-map-region-editor,
+      .world-city-map-context-menu, .world-city-map-city-catalog,
+      .world-city-map-icon-grid, .world-city-map-position-controls,
+      .city-service-card, .agent-message, .agent-job, .agent-profile, .agent-nav,
+      .city-encounter-card) {
+  color: var(--city-tone-text);
+  background: var(--city-tone-panel) !important;
+  border-color: var(--city-tone-border);
+}
+
+:is(#cyberpunk-city-agent, .city-agent-application) .agent-message.out {
+  background: var(--city-tone-raised) !important;
+  border-color: var(--city-tone-accent);
+}
+
+:is(#cyberpunk-night-city, .night-city-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(.world-city-map-city-catalog article, .city-encounter-card details,
+      .city-dossier-region) {
+  background: var(--city-tone-raised);
+  border-color: var(--city-tone-border);
+}
+:is(#cyberpunk-night-city, .night-city-application) .city-tools-tabs {
+  border-color: var(--city-tone-border);
+}
+:is(#cyberpunk-night-city, .night-city-application) .night-city-tools label {
+  color: var(--city-tone-muted);
+}
+
+/* Archive gives this nested aside an !important red background and border. */
+#pcm-root .world-city-map-shell > .world-city-map-sidebar {
+  background: var(--city-tone-panel) !important;
+  border-color: var(--city-tone-border) !important;
+}
+
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(h1, h2, h3, h4, h5, h6, .night-city-top strong):not(.city-comm-link *) {
+  color: var(--city-tone-text);
+  font-family: var(--city-tone-font) !important;
+}
+
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(.night-city-top small, .city-tools-head small,
+      .city-service-panel > header small, .city-service-summary,
+      .world-city-map-city-catalog header small,
+      .world-city-map-position-controls summary, .agent-status) {
+  color: var(--city-tone-accent-text);
+}
+
+/* Apply the text font only to text controls. Foundry puts FA classes directly
+ * on some native buttons, so those retain the icon font selected by Foundry. */
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(button, input, select, textarea, label, summary):not(.city-comm-link *):not([class^="fa-"]):not([class*=" fa-"]):not(.fa, .fas, .far, .fab, .fad, .fal, .fat, .fass, .fasds) {
+  font-family: var(--city-tone-font) !important;
+}
+
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(input, select, textarea):not(.city-comm-link *):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="color"]) {
+  color: var(--city-tone-text);
+  background: var(--city-tone-bg);
+  border-color: var(--city-tone-border);
+}
+
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  select option:not(.city-comm-link *) {
+  color: var(--city-tone-text);
+  background: var(--city-tone-bg);
+}
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(input[type="checkbox"], input[type="radio"]):not(.city-comm-link *) {
+  accent-color: var(--city-tone-accent);
+}
+
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  button:not(:where(.city-comm-link *, .world-city-map-marker, .world-city-map-position-icon)) {
+  color: var(--city-tone-text);
+  background: var(--city-tone-raised);
+  border-color: var(--city-tone-border);
+  text-shadow: none;
+}
+
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  button:hover:not(:disabled):not(:where(.city-comm-link *, .world-city-map-marker, .world-city-map-position-icon)) {
+  background: #254147;
+  border-color: var(--city-tone-accent);
+}
+
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(button, input, select, textarea):focus-visible:not(.city-comm-link *):not(.world-city-map-marker) {
+  outline: 2px solid var(--city-tone-accent);
+  outline-offset: 2px;
+}
+
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(.primary, .agent-compose button, .agent-nav button.active,
+      .world-city-map-position-controls .active):not(.city-comm-link *) {
+  color: var(--city-tone-accent-text);
+  background: #254147;
+  border-color: var(--city-tone-accent);
+}
+
+/* Semantic colours stay local to their icon, category, region, or action. */
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(button.danger, button[data-service-action="job-delete"]):not(.city-comm-link *) {
+  color: #ff8f95;
+  border-color: #aa5059;
+}
+:is(#cyberpunk-night-city, .night-city-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(.world-city-map-category-expand, .world-city-map-category-visibility) {
+  color: var(--world-map-category-color);
+}
+:is(#cyberpunk-night-city, .night-city-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  .world-city-map-category-select {
+  border-left-color: var(--world-map-category-color);
+}
+:is(#cyberpunk-night-city, .night-city-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  .world-city-map-category-point-visibility {
+  color: var(--world-map-marker-color);
+}
+
+:is(#cyberpunk-night-city, .night-city-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(.world-city-map-search, .world-city-map-marker-opacity-control) {
+  color: var(--city-tone-text);
+  background: var(--city-tone-bg);
+  border-color: var(--city-tone-border);
+}
+:is(#cyberpunk-night-city, .night-city-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  .world-city-map-marker-opacity-control input[type="range"] {
+  accent-color: var(--city-tone-accent);
+}
+:is(#cyberpunk-night-city, .night-city-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  .world-city-map-marker-opacity-control input[type="range"]::-webkit-slider-runnable-track {
+  background: var(--city-tone-border);
+}
+:is(#cyberpunk-night-city, .night-city-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  .world-city-map-marker-opacity-control input[type="range"]::-webkit-slider-thumb {
+  background: var(--city-tone-accent);
+}
+
+/* Only scrollable city panels participate; tile/marker layers get no effects. */
+:is(#cyberpunk-night-city, .night-city-application,
+    #cyberpunk-city-services, .city-services-application,
+    #cyberpunk-city-agent, .city-agent-application,
+    #pcm-root .world-city-map-shell, .archive-mode-root .world-city-map-shell)
+  :is(.world-city-map-sidebar-scroll, .world-city-map-inspector,
+      .world-city-map-city-catalog [data-city-catalog-list], .night-city-tools,
+      .city-service-panel, .agent-messages, .agent-jobs, .agent-profile) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--city-tone-border) var(--city-tone-bg);
+}

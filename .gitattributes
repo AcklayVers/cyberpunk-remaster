@@ -1,0 +1,14 @@
+* text=auto
+*.json text eol=lf
+*.mjs text eol=lf
+*.js text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.css text eol=lf
+*.hbs text eol=lf
+*.webp binary
+*.png binary
+*.jpg binary
+*.woff2 binary
+packs/** -text

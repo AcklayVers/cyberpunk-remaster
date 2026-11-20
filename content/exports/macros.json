@@ -1,0 +1,48 @@
+[
+  {
+    "name": "Счётчик следа",
+    "type": "script",
+    "_id": "jfZgVarzfCVyTAGY",
+    "author": null,
+    "img": "icons/svg/dice-target.svg",
+    "scope": "global",
+    "command": "(async () => {\n  const token = canvas.tokens.controlled[0];\n  if (!token) return ui.notifications.warn(\"Сначала выбери токен.\");\n  const actor = token.actor, KEY = \"flags.cyberpunk-remaster.netrunnerTrace\";\n  const cur = foundry.utils.getProperty(actor, KEY) ?? 0;\n  const set = async (v) => { const val = Math.max(0, v); await actor.update({ [KEY]: val }); ui.notifications.info(`${actor.name} — след: ${val}`); };\n  new Dialog({ title: \"След в сети\",\n    content: `<p style=\"text-align:center\">След <b>${actor.name}</b>: <b style=\"font-size:1.3em\">${cur}</b></p>`,\n    buttons: { plus:{label:\"+1\",callback:()=>set(cur+1)}, minus:{label:\"−1\",callback:()=>set(cur-1)}, reset:{label:\"Сброс\",callback:()=>set(0)}, close:{label:\"Закрыть\"} },\n    default: \"plus\" }).render(true);\n})();",
+    "folder": null,
+    "sort": 0,
+    "ownership": {
+      "default": 0
+    },
+    "flags": {},
+    "_stats": {
+      "coreVersion": "14.361",
+      "systemId": "sf2e",
+      "systemVersion": "1.2.0",
+      "createdTime": 1782932643056,
+      "modifiedTime": 1782932651471,
+      "compendiumSource": "Compendium.cyberpunk-remaster.cyberpunk-macros.Macro.jfZgVarzfCVyTAGY"
+    }
+  },
+  {
+    "name": "НЕЙРО-АРХИВ",
+    "type": "script",
+    "_id": "s1WeomZM6dUBtyQn",
+    "author": null,
+    "img": "modules/cyberpunk-remaster/assets/icons/special/File.png",
+    "scope": "global",
+    "command": "CyberpunkRemaster.archive();",
+    "folder": null,
+    "sort": 0,
+    "ownership": {
+      "default": 0
+    },
+    "flags": {},
+    "_stats": {
+      "coreVersion": "14.361",
+      "systemId": "sf2e",
+      "systemVersion": "1.2.0",
+      "createdTime": 1784903933156,
+      "modifiedTime": 1785342040000,
+      "compendiumSource": "Compendium.cyberpunk-remaster.cyberpunk-macros.Macro.s1WeomZM6dUBtyQn"
+    }
+  }
+]

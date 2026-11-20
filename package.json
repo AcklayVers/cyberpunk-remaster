@@ -1,0 +1,37 @@
+{
+  "name": "sf2e-cyberpunk-remaster",
+  "private": true,
+  "version": "2.18.1",
+  "type": "module",
+  "description": "Build and validation tooling for the SF2E Cyberpunk Remaster Foundry module.",
+  "scripts": {
+    "sync:from-foundry": "node scripts/sync-from-foundry.mjs",
+    "deploy": "node scripts/deploy-to-foundry.mjs",
+    "author:update": "node scripts/author-update.mjs",
+    "author:update:workspace": "npm run sync:from-foundry && npm run check && npm run deploy",
+    "maintenance:extract-folders": "node scripts/maintenance/extract-pack-folders.mjs",
+    "maintenance:import-items": "node scripts/maintenance/import-items-from-pack.mjs",
+    "maintenance:add-red-pkt": "node scripts/maintenance/add-red-pkt-content.mjs",
+    "maintenance:cyberpunkify-programs": "node scripts/maintenance/cyberpunkify-programs.mjs",
+    "maintenance:add-obsolete-interface-scan": "node scripts/maintenance/add-netrunner-interface-scan.mjs",
+    "audit:pkt": "node scripts/audit-pkt-bonuses.mjs",
+    "build": "node scripts/build-packs.mjs",
+    "clean:build": "node scripts/prune-build-artifacts.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "validate": "node scripts/validate-packs.mjs",
+    "test:unit": "node --test tests/*.test.mjs",
+    "test:coverage": "node --experimental-test-coverage --test --test-coverage-lines=70 --test-coverage-branches=65 --test-coverage-functions=75 --test-coverage-exclude=runtime/neuro-archive-controller.mjs --test-coverage-exclude=tests/fixtures/** tests/*.test.mjs",
+    "test": "npm run test:unit && npm run validate && npm run audit:pkt",
+    "check": "npm run lint && npm run format:check && npm run build && npm test"
+  },
+  "devDependencies": {
+    "classic-level": "3.0.0",
+    "eslint": "10.8.0",
+    "prettier": "3.9.6"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

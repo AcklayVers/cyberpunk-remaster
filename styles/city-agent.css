@@ -1,0 +1,322 @@
+.city-agent-application {
+  min-width: 320px;
+  max-width: 100vw;
+  container-type: inline-size;
+}
+.city-agent-application .window-content {
+  padding: 0;
+  overflow: hidden;
+  min-height: 0;
+}
+.city-agent-phone {
+  --agent-bg: #0e1518;
+  --agent-panel: #142126;
+  --agent-border: #30464d;
+  --agent-accent: #78baba;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  color: #e8eef0;
+  background: var(--agent-bg);
+  font:
+    14px/1.45 system-ui,
+    -apple-system,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+.agent-status {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px;
+  color: var(--agent-accent);
+  font-size: 11px;
+}
+.agent-status span {
+  margin-left: auto;
+}
+.agent-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 12px 12px;
+  border-bottom: 1px solid var(--agent-border);
+}
+.agent-context label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  min-width: 0;
+  flex: 1;
+}
+.agent-context select {
+  min-width: 0;
+  max-width: 100%;
+  flex: 1;
+}
+.agent-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  padding: 12px 12px 0;
+}
+.agent-contacts {
+  display: flex;
+  gap: 5px;
+  padding-bottom: 8px;
+}
+.agent-contacts select {
+  min-width: 0;
+  flex: 1;
+}
+.agent-contacts button {
+  width: 30px;
+  flex: none;
+}
+.agent-messages,
+.agent-jobs {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  padding: 8px 3px;
+  scrollbar-width: thin;
+}
+.agent-message {
+  margin: 0 15px 10px 0;
+  padding: 10px;
+  border: 1px solid var(--agent-border);
+  background: var(--agent-panel);
+  border-radius: 8px 8px 8px 2px;
+  overflow-wrap: anywhere;
+}
+.agent-message.out {
+  margin: 0 0 10px 15px;
+  background: #183333;
+  border-color: #467576;
+  border-radius: 8px 8px 2px 8px;
+}
+.agent-message header,
+.agent-job header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.agent-message time,
+.agent-job small {
+  font-size: 10px;
+  color: #9aa8ad;
+}
+.agent-message p,
+.agent-job p {
+  white-space: pre-wrap;
+  margin: 6px 0;
+}
+.agent-compose {
+  flex: none;
+  display: grid;
+  gap: 7px;
+  padding: 8px 0 12px;
+  border-top: 1px solid var(--agent-border);
+}
+.agent-compose textarea {
+  resize: vertical;
+  min-height: 65px;
+  max-height: 170px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.city-agent-phone .agent-compose button {
+  background: #356f72;
+  color: #eefafa;
+}
+.agent-nav {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  flex: none;
+  padding: 10px;
+  border-top: 1px solid var(--agent-border);
+  background: #111b1f;
+}
+.agent-nav button {
+  font-size: 12px;
+  padding: 7px 3px;
+}
+.agent-nav button.active {
+  border-color: var(--agent-accent);
+  color: #b9eeee;
+  background: #203538;
+}
+.agent-job {
+  padding: 12px;
+  margin: 0 0 10px;
+  border: 1px solid var(--agent-border);
+  background: var(--agent-panel);
+  border-radius: 8px;
+}
+.agent-job header span {
+  font-size: 10px;
+  color: var(--agent-accent);
+}
+.agent-job > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.agent-profile {
+  overflow: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--agent-border);
+  border-radius: 8px;
+  background: var(--agent-panel);
+  margin-bottom: 12px;
+}
+.agent-profile img {
+  height: 110px;
+  width: 110px;
+  object-fit: cover;
+  border-radius: 50%;
+  align-self: center;
+  border: 2px solid var(--agent-accent);
+}
+.agent-profile h2 {
+  text-align: center;
+  font-size: 22px;
+}
+.agent-empty {
+  padding: 15px;
+  color: #9aa8ad;
+}
+.city-agent-phone button {
+  font: inherit;
+  font-weight: 700;
+  color: inherit;
+  border: 1px solid var(--agent-border);
+  background: #172328;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.city-agent-phone button:hover {
+  border-color: var(--agent-accent);
+}
+.city-agent-phone button:focus-visible,
+.city-agent-phone :is(input, textarea, select):focus-visible {
+  outline: 2px solid var(--agent-accent);
+  outline-offset: 2px;
+}
+.city-agent-phone input,
+.city-agent-phone textarea,
+.city-agent-phone select {
+  font: inherit;
+  color: #e8eef0;
+  background: #10191d;
+  border: 1px solid var(--agent-border);
+  border-radius: 6px;
+  padding: 7px 9px;
+}
+.city-agent-phone button:disabled {
+  opacity: 0.5;
+}
+#city-agent-pill {
+  position: fixed;
+  right: 18px;
+  bottom: 30px;
+  z-index: 90;
+  padding: 10px 16px;
+  background: #102e30;
+  color: #8ffff0;
+  border: 1px solid #4dada8;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px #0008;
+}
+.city-service-panel {
+  background: #111e2c;
+  color: #dceaf0;
+  padding: 14px;
+  overflow: auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+.city-service-panel label {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0;
+}
+.city-service-panel input,
+.city-service-panel textarea,
+.city-service-panel select {
+  width: 100%;
+  box-sizing: border-box;
+}
+.city-service-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+.city-service-card {
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #355067;
+  background: #152332;
+  border-radius: 6px;
+}
+.city-service-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.city-service-stock {
+  width: 100%;
+  border-collapse: collapse;
+}
+.city-service-stock td {
+  padding: 7px;
+  border-bottom: 1px solid #2a3f50;
+}
+.city-service-stock td:last-child {
+  text-align: right;
+}
+.city-service-warning {
+  padding: 10px;
+  background: #342916;
+  border-left: 3px solid #dcb15a;
+}
+.city-service-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.city-service-summary {
+  color: #8ddacb;
+  font-size: 12px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .city-agent-application * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.city-agent-network .agent-body {
+  padding: 0;
+  overflow: hidden;
+}
+.agent-comm-link-host {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
